@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Hello World</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0
+        }
+    </style>
+</head>
+<script src="pixi.min.js"></script>
+
+<body style="cursor: url(images/ch.png) 2 2, pointer;">
+    <script>
+        var app = new PIXI.Application(800, 600, {
+            backgroundColor: '337DFF'
+        });
+        app.renderer.autoResize = true;
+        app.renderer.resize(window.innerWidth, window.innerHeight);
+        var bground = PIXI.Sprite.fromImage('images/cloud.jpg')
+        bground.x = 0;
+        bground.y = 0;
+        bground.anchor.x = 0;
+        bground.anchor.y = 0;
+
+        app.stage.addChild(bground);
+
+        //add click event
+        app.stage.interactive = true;
+        app.stage.on('mousedown', onDown);
+
+        document.body.appendChild(app.view);
+
+        // create a new Sprite from an image path
+        var cat = PIXI.Sprite.fromImage('images/jetlittle.png')
+        var jet = PIXI.Sprite.fromImage('images/jetleft.png')
+        var aa = PIXI.Sprite.fromImage('images/aa.png')
+        var mis = PIXI.Sprite.fromImage('images/mis.png')
+        mis.rotation = -0.7;
+        //var for missle shots
+        var mis_x = 0;
+        var mis_y = 0;
+
+        // center the sprite's anchor point
+        cat.anchor.set(0.5);
+        aa.anchor.set(0.5);
+        aa.y = app.renderer.height - 10;
+        aa.x = 100;
+        app.stage.addChild(aa);
+        // move the sprite to the center of the screen
+        //cat.x = -20;
+        cat.y = app.renderer.height / 2;
+
+        //app.stage.addChild(cat);
+
+        // center the sprite's anchor point
+        jet.anchor.set(0.5);
+
+        // move the sprite to the center of the screen
+        jet.x = app.renderer.width + 20;
+        jet.y = app.renderer.height / 2;
+
+        app.stage.addChild(jet);
+
+        // Listen for animate update
+        app.ticker.add(function(delta) {
+            // just for fun, let's rotate mr rabbit a little
+            // delta is 1 if running at 100% performance
+            // creates frame-independent tranformation
+            //cat.rotation += 0.1 * delta;
+            //cat.x = cat.x + 1;
+            jet.x = jet.x - 5;
+            cat.x = cat.x + 5;
+            if (jet.x < -80) {
+                cat.x = -20;
+                jet.x = app.renderer.width + 200;
+                app.stage.addChild(cat);
+            }
+
+        })
+
+        function onDown() {
+            console.log('clicked');
+            console.log(app.renderer.plugins.interaction.mouse.global);
+            mis.y = app.renderer.height - 70;
+            mis.x = 125;
+
+            app.stage.addChild(mis);
+            firemissle(app.renderer.plugins.interaction.mouse.global.x, app.renderer.plugins.interaction.mouse.global.y);
+
+
+        }
+
+        function firemissle(fireX, fireY) {
+            var x, y, x1, y1, x2 = 0,
+                y2 = 0, /// positions
+                f = 0, /// "progress"
+                speed, /// speed based on dist/steps
+                dist, /// distance between points
+                steps = 1; /// steps (constant speed)
+
+            /// if we are moving, return
+            if (f !== 0) return;
+            /// set start point
+            x1 = 125;
+            y1 = app.renderer.height - 70;
+
+            /// get and adjust mouse position    
+            x2 = fireX - x1,
+                y2 = fireY - y1;
+            console.log('fireX-' + fireX);
+            console.log('x1-' + x1 + ' x2-' + x2 + ' y1-' + y1 + ' y2-' + y2);
+            /// calc distance
+            var dx = x2 - x1,
+                dy = y2 - y1;
+
+            dist = Math.abs(Math.sqrt(dx * dx + dy * dy));
+
+            /// speed will be number of steps / distance
+            speed = steps / dist;
+
+
+            app.ticker.add(function(delta) {
+
+                /// move a step
+                f += speed;
+
+                /// calc current x/y position
+                x = x1 + (x2 - x1) * f;
+                y = y1 + (y2 - y1) * f;
+
+                /// at goal? if not, loop
+                if (f < 1) {
+                    /// draw the "player"
+                    //ctx.fillRect(x - 4, y - 4, 8, 8);
+                    mis.x = x;
+                    mis.y = y;
+                    //requestAnimationFrame(loop);
+                } else {
+                    /// draw the "player"
+                    //ctx.fillRect(x2 - 4, y2 - 4, 8, 8);
+
+                    /// reset f so we can click again
+                    f = 0;
+                }
+            });
+
+        };
+    </script>
+</body>
+
+</html>

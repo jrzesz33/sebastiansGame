@@ -1,0 +1,16 @@
+{
+    "name": "pixijs",
+    "version": "1.0.0",
+    "description": "yea",
+    "main": "index.html",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "http-server"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "http-server": "^0.10.0",
+        "nodemon": "^1.12.1"
+    }
+}
